@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+/* v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Paleta corporativa */
+@theme {
+  --color-skyBlue: #4278FA;
+  --color-cyan: #4372C4;
+  --color-cloud: #EDEBE3;
+  --color-lightBlue: #94b2fa;
+  --color-coffee: #4D5445;
+  --color-lightCoffee: #9EA18A;
+  --color-bone: #E8E3D4;
+  --color-grey: #4d5461;
+  --color-lightGrey: #8C96A1;
+}
+
+/* ===== Tokens de UI (claro/oscuro azulado) ===== */
+:root{
+  --bg: var(--color-bone);
+  --fg: var(--color-grey);
+  --surface: #fff;
+  --surface-muted: #f4f4f1;
+  --ring: var(--color-skyBlue);
+  --outline: color-mix(in oklab, var(--fg) 18%, transparent);
+
+  /* Tabla */
+  --table-head: color-mix(in oklab, var(--bg) 90%, #fff 10%);
+  --table-hover: color-mix(in oklab, var(--ring) 10%, var(--surface));
+  --link: var(--color-cyan);
+  --muted: color-mix(in oklab, var(--fg) 55%, transparent);
+}
+html.dark, .dark :root{
+  --bg: color-mix(in oklab, #0B1220 88%, var(--color-cyan) 12%);
+  --fg: var(--color-cloud);
+  --surface: color-mix(in oklab, var(--bg) 72%, white);
+  --surface-muted: color-mix(in oklab, var(--bg) 85%, white 8%);
+  --ring: var(--color-lightBlue);
+  --outline: color-mix(in oklab, var(--fg) 22%, transparent);
+
+  /* Tabla en oscuro */
+  --table-head: color-mix(in oklab, var(--bg) 65%, white 28%);
+  --table-hover: color-mix(in oklab, var(--ring) 16%, var(--surface));
+  --link: var(--color-lightBlue);
+  --muted: color-mix(in oklab, var(--fg) 65%, transparent);
+}
+
+/* ===== Base ===== */
+html, body { @apply min-h-screen; background: var(--bg); color: var(--fg); }
+a { color: var(--link); }
+small, .muted { color: var(--muted); }
+
+/* ===== Navbar / Sidebar / Cards / Inputs / Botones ===== */
+.nav{ @apply border-b backdrop-blur; border-color: var(--outline); background: var(--surface-muted); }
+.dark .nav{
+  background: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--bg) 65%, var(--color-skyBlue) 18%) 0%,
+    var(--bg) 100%
+  );
+}
+.sidebar{ @apply rounded-2xl border; background: var(--surface-muted); border-color: var(--outline); }
+.card{ @apply rounded-2xl border shadow-sm; background: var(--surface); border-color: var(--outline); color: var(--fg); }
+
+.input{ @apply w-full rounded-xl px-3 py-2 text-sm outline-none transition;
+        background: var(--surface); color: var(--fg); border:1px solid var(--outline); }
+.input:focus{ box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 30%, transparent); }
+
+.btn{ @apply rounded-xl px-4 py-2 text-sm transition disabled:opacity-50; }
+.btn-primary{ @apply text-white; background: var(--color-skyBlue); }
+.btn-primary:hover{ background: var(--color-cyan); }
+.btn-outline{ color: var(--fg); border:1px solid var(--outline); background: transparent; }
+.btn-outline:hover{ background: var(--surface-muted); }
+
+.badge{ @apply inline-block rounded px-2 py-0.5 text-xs font-semibold; color:white;
+        background: color-mix(in oklab, var(--ring) 28%, transparent); }
+
+/* ====== Sistema de tabla (contraste OK en dark) ====== */
+.table { @apply w-full border-collapse; }
+.table thead th{
+  @apply text-xs font-semibold uppercase tracking-wide;
+  background: var(--table-head);
+  border-bottom: 1px solid var(--outline);
+}
+.table-row { background: var(--surface); }           /* sin opacidad, nunca */
+.table-row:hover { background: var(--table-hover); } /* highlight solo de fondo */
+.table-cell{
+  @apply px-4 py-3 align-middle text-sm;
+  border-bottom: 1px solid color-mix(in oklab, var(--fg) 10%, transparent);
+}
+
+/* Nota/paginación del pie */
+.table-footnote{ @apply mt-2 text-xs; color: var(--muted); }
+
+/* Estados */
+.status-asignado{ background: color-mix(in oklab, var(--ring) 22%, var(--surface)); color: white; }
+.status-devuelto{ background: color-mix(in oklab, #33cc88 70%, #000 0%); color: #082b1d; }
+.dark .status-devuelto{ background: color-mix(in oklab, #33cc88 45%, white 10%); color: #071f16; }
