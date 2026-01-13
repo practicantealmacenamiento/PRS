@@ -3,7 +3,6 @@ Infraestructura :: Mapeadores ORM <-> Entidades de dominio
 """
 from __future__ import annotations
 from typing import Optional
-from django.contrib.auth import get_user_model
 
 from ..domain.entities import Empleado, RadioFrecuencia, SapUsuario, Prestamo
 from ..domain.value_objects import Turno, EstadoPrestamo
@@ -85,8 +84,8 @@ def prestamo_to_model_fields(entity: Prestamo) -> dict:
         "usuario_sap": entity.usuario_sap,
         "codigo_radio": entity.codigo_radio,
         "fecha_hora_prestamo": entity.fecha_hora_prestamo,
-        "turno": entity.turno.value if hasattr(entity.turno, "value") else str(entity.turno),
-        "estado": entity.estado.value if hasattr(entity.estado, "value") else str(entity.estado),
+        "turno": entity.turno.value,
+        "estado": entity.estado.value,
         "usuario_registra_id": entity.usuario_registra_id,
         "fecha_hora_devolucion": entity.fecha_hora_devolucion,
     }

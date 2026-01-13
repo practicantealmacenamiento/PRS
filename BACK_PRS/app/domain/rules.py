@@ -1,30 +1,37 @@
+"""Reglas de negocio y utilidades de normalizacion."""
+
 from __future__ import annotations
+
 from datetime import datetime, time
 from typing import Optional
 
-def calcular_turno(ahora: Optional[datetime]) -> str:
-    """
-    Determina el turno a partir de una fecha/hora local.
-      - Turno 1: 06:00 - 13:59
-      - Turno 2: 14:00 - 21:59
-      - Turno 3: 22:00 - 05:59
-    """
+from .value_objects import Turno
+
+
+def calcular_turno(ahora: Optional[datetime]) -> Turno:
+    """Determina el turno correspondiente para la hora proporcionada."""
     if ahora is None:
         raise ValueError("Se requiere 'ahora' para calcular el turno.")
     t = ahora.time()
     if time(6, 0) <= t < time(14, 0):
-        return "Turno 1 (6 am - 2 pm)"
+        return Turno.T1
     if time(14, 0) <= t < time(22, 0):
-        return "Turno 2 (2 pm - 10 pm)"
-    return "Turno 3 (10 pm - 6 am)"
+        return Turno.T2
+    return Turno.T3
+
 
 def clean_doc(x: Optional[str]) -> Optional[str]:
+    """Limpia una cedula dejando solo digitos (maximo 15)."""
     if not x:
         return None
     return "".join(ch for ch in x if ch.isdigit())[:15]
 
+
 def clean_sap(x: Optional[str]) -> Optional[str]:
+    """Normaliza un usuario de SAP (strip y maximo 50 chars)."""
     return x.strip()[:50] if x else None
 
+
 def clean_rf(x: Optional[str]) -> Optional[str]:
+    """Normaliza un codigo de radio (strip, upper, maximo 25 chars)."""
     return x.strip().upper()[:25] if x else None

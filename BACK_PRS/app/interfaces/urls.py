@@ -1,3 +1,5 @@
+"""Rutas de la capa de interfaces (DRF)."""
+
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
@@ -20,4 +22,3 @@ router.register(r"usuarios-app", AppUserViewSet, basename="usuariosapp")
 urlpatterns = [
     path("", include(router.urls)),
 ]
-

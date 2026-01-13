@@ -1,3 +1,5 @@
+"""Serializers expuestos por la capa de interfaces."""
+
 from __future__ import annotations
 from typing import Optional
 from rest_framework import serializers
@@ -101,7 +103,7 @@ class AsignarPrestamoRequestSerializer(serializers.Serializer):
     cedula = serializers.CharField(max_length=15)
     codigo_radio = serializers.CharField(max_length=25)
     usuario_sap = serializers.CharField(max_length=50)
-    ahora = serializers.DateTimeField(required=False)  # si no llega, se tomará hora local del servidor
+    ahora = serializers.DateTimeField(required=False)  # si no llega, se tomara hora local del servidor
 
 class DevolverPrestamoRequestSerializer(serializers.Serializer):
     """

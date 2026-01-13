@@ -19,7 +19,7 @@
   - `services.py`: `PrestamosService` implementa la logica de asignacion/devolucion.
   - `catalogos_service.py`: operaciones sobre catalogos y emision de auditoria.
   - `use_cases.py`: comandos inmutables y casos de uso (`PrestamoUseCases`, `CatalogosUseCases`).
-  - `validators.py`: utilidades para validar entradas y filtrar campos permitidos.
+  - `audit_queries.py`: consultas de solo lectura para exponer el log de auditoria.
 - **`infrastructure/`**:
   - `models.py`: modelos ORM (`EmpleadoModel`, `RadioFrecuenciaModel`, `SapUsuarioModel`, `PrestamoModel`, `AuditEntry`).
   - `mappers.py`: conversion bidireccional entre modelos Django y entidades de dominio.

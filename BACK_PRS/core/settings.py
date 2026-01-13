@@ -64,12 +64,16 @@ USE_TZ = True
 STATIC_URL = "static/"
 
 # DRF
+_default_auth_classes = ["rest_framework_simplejwt.authentication.JWTAuthentication"]
+try:
+    import rest_framework_simplejwt  # noqa: F401
+except ImportError:  # pragma: no cover
+    _default_auth_classes = ["rest_framework.authentication.BasicAuthentication"]
+
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": _default_auth_classes,
 }
 
 # OpenAPI
@@ -81,7 +85,17 @@ SPECTACULAR_SETTINGS = {
 
 # CORS para desarrollo
 
-CORS_ALLOW_ALL_ORIGINS = True
+_default_origins = os.environ.get("CORS_ALLOWED_ORIGINS")
+if _default_origins:
+    CORS_ALLOWED_ORIGINS = [origin.strip() for origin in _default_origins.split(",") if origin.strip()]
+else:
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://172.24.66.23:3000",
+    ]
+
+CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
 
 from datetime import timedelta
 SIMPLE_JWT = {

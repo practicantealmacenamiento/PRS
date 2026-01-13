@@ -1,16 +1,20 @@
 from __future__ import annotations
 from typing import Dict, List, Optional
 from datetime import datetime
+from contextvars import ContextVar
+
+from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.db.models import Q
 
+from ..domain.events import AuditLogRecord
 from ..domain.ports.repositories import (
     EmpleadoRepository,
     RadioRepository,
     SapUsuarioRepository,
     PrestamoRepository,
 )
-from ..domain.ports.audit import AuditLogRepository
+from ..domain.ports.audit import AuditLogRepository, AuditLogQueryRepository
 from ..domain.ports.uow import UnitOfWork
 from ..domain.entities import Empleado, RadioFrecuencia, SapUsuario, Prestamo
 from ..domain.errors import EntityNotFound
@@ -32,18 +36,29 @@ from .mappers import (
 )
 
 
-# -----------------------
-# Unit Of Work (Adapter)
-# -----------------------
-
 class DjangoUnitOfWork(UnitOfWork):
+    """
+    Unit of Work segura para usar como singleton mediante ContextVar.
+    """
+
+    _stack: ContextVar[Optional[List[transaction.Atomic]]] = ContextVar("django_uow_stack", default=None)
+
     def __enter__(self) -> "DjangoUnitOfWork":
-        self._ctx = transaction.atomic()
-        self._ctx.__enter__()
+        ctx = transaction.atomic()
+        ctx.__enter__()
+        stack = self._stack.get()
+        if stack is None:
+            stack = []
+            self._stack.set(stack)
+        stack.append(ctx)
         return self
 
     def __exit__(self, exc_type, exc, tb) -> None:
-        self._ctx.__exit__(exc_type, exc, tb)
+        stack = self._stack.get()
+        if not stack:
+            return
+        ctx = stack.pop()
+        ctx.__exit__(exc_type, exc, tb)
 
     def commit(self) -> None:
         # No-op: transaction.atomic() se maneja vía __exit__
@@ -143,10 +158,14 @@ class DjangoSapUsuarioRepository(SapUsuarioRepository):
             )
         return [sap_from_model(x) for x in qs.order_by("username")]
 
+    def _empleado_from_cedula(self, cedula: str) -> EmpleadoModel:
+        empleado = EmpleadoModel.objects.filter(cedula=cedula).first()
+        if not empleado:
+            raise EntityNotFound(f"Empleado {cedula} no existe")
+        return empleado
+
     def crear(self, *, username: str, empleado_cedula: Optional[str] = None, activo: bool = True) -> SapUsuario:
-        empleado = None
-        if empleado_cedula:
-            empleado = EmpleadoModel.objects.filter(cedula=empleado_cedula).first()
+        empleado = self._empleado_from_cedula(empleado_cedula) if empleado_cedula else None
         obj = SapUsuarioModel.objects.create(username=username, empleado=empleado, activo=activo)
         return sap_from_model(obj)
 
@@ -158,7 +177,7 @@ class DjangoSapUsuarioRepository(SapUsuarioRepository):
         # Permitir vincular por cedula
         if "empleado_cedula" in cambios:
             ced = cambios.pop("empleado_cedula")
-            empleado = EmpleadoModel.objects.filter(cedula=ced).first() if ced else None
+            empleado = self._empleado_from_cedula(ced) if ced else None
             obj.empleado = empleado
 
         for k, v in cambios.items():
@@ -235,3 +254,37 @@ class DjangoAuditLogRepository(AuditLogRepository):
             after=event.after,
             reason=event.reason,
         )
+
+
+class DjangoAuditLogQueryRepository(AuditLogQueryRepository):
+    """
+    Adaptador de solo lectura para consultar eventos de auditoría.
+    """
+
+    def listar(self, *, limit: int, aggregate: Optional[str] = None) -> List[AuditLogRecord]:
+        qs = AuditEntry.objects.all()
+        if aggregate:
+            qs = qs.filter(aggregate=aggregate)
+        entries = list(qs.order_by("-at")[:limit])
+        if not entries:
+            return []
+
+        actor_ids = {entry.actor_user_id for entry in entries}
+        UserModel = get_user_model()
+        user_map = {user.id: user.username for user in UserModel.objects.filter(id__in=actor_ids)}
+
+        return [
+            AuditLogRecord(
+                id=entry.id,
+                aggregate=entry.aggregate,
+                action=entry.action,
+                id_ref=entry.id_ref,
+                at=entry.at,
+                actor_user_id=entry.actor_user_id,
+                actor_username=user_map.get(entry.actor_user_id),
+                before=entry.before,
+                after=entry.after,
+                reason=entry.reason,
+            )
+            for entry in entries
+        ]

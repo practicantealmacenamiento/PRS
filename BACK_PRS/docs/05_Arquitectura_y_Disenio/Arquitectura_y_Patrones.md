@@ -12,7 +12,7 @@ RadioFrecuencias adopta un enfoque inspirado en Clean Architecture, separando la
 - **Application (`app/application`)**
   - Servicios de negocio (`PrestamosService`, `CatalogosService`) que orquestan validaciones, reglas y operaciones transaccionales.
   - Casos de uso (`PrestamoUseCases`, `CatalogosUseCases`) que exponen comandos inmutables (`AsignarPrestamoCmd`, `CrearEmpleadoCmd`, etc.) para facilitar pruebas y claridad.
-  - Validadores (`validators.py`) que limpian inputs y limitan actualizaciones a campos permitidos.
+  - Consultas y utilidades específicas (`audit_queries.py`) que encapsulan necesidades de lectura especializada; las validaciones de entrada se manejan en serializers de interfaces.
 - **Infrastructure (`app/infrastructure`)**
   - Modelos ORM (`models.py`) con indices y metadatos que optimizan consultas.
   - Mapeadores (`mappers.py`) responsables de convertir entre modelos Django y entidades de dominio, manteniendo consistencia de tipos.

@@ -1,6 +1,8 @@
+"""Servicios de aplicacion para el flujo de prestamos de radios."""
+
 from __future__ import annotations
 from datetime import datetime
-from typing import ContextManager, Optional
+from typing import ContextManager, Optional, List
 from contextlib import nullcontext
 
 from ..domain.errors import BusinessRuleViolation, EntityNotFound, InactiveEntity
@@ -12,16 +14,12 @@ from ..domain.ports.repositories import (
 )
 from ..domain.ports.uow import UnitOfWork
 from ..domain.entities import Prestamo
-from ..domain.rules import calcular_turno
+from ..domain.rules import calcular_turno, clean_doc, clean_rf, clean_sap
 from ..domain.value_objects import EstadoPrestamo
 
 
 class PrestamosService:
-    """
-    Casos de uso de préstamos:
-    - Asignar radio a empleado (crea préstamo abierto; requiere cédula + código RF + usuario SAP)
-    - Devolver préstamo (cierra abierto por exactamente uno de: cédula / usuario_sap / código)
-    """
+    """Orquesta la asignacion y devolucion de radios garantizando reglas de negocio."""
 
     def __init__(
         self,
@@ -38,7 +36,12 @@ class PrestamosService:
         self.uow = uow
 
     def _ctx(self) -> ContextManager:
+        """Abstrae el UnitOfWork para reusar la misma semantica en pruebas."""
         return self.uow if self.uow is not None else nullcontext()
+
+    def listar(self, *, cedula: Optional[str] = None, codigo_radio: Optional[str] = None) -> List[Prestamo]:
+        """Consulta prestamos sin reglas adicionales (read model)."""
+        return self.prestamos.listar(cedula=cedula, codigo_radio=codigo_radio)
 
     # --------- Asignar ---------
     def asignar(
@@ -50,11 +53,22 @@ class PrestamosService:
         usuario_registra_id: int,
         ahora: datetime,
     ) -> Prestamo:
-        """
-        Reglas:
-        - Empleado activo, Radio activa, Usuario SAP activo.
-        - Ningún abierto por la misma cédula / usuario_sap / código.
-        """
+        """Crea un prestamo abierto tras validar entidades activas y duplicados."""
+        cedula_clean = clean_doc(cedula)
+        codigo_clean = clean_rf(codigo_radio)
+        usuario_sap_clean = clean_sap(usuario_sap)
+
+        if not cedula_clean:
+            raise BusinessRuleViolation("Cédula inválida.")
+        if not codigo_clean:
+            raise BusinessRuleViolation("Código de radio inválido.")
+        if not usuario_sap_clean:
+            raise BusinessRuleViolation("Usuario SAP inválido.")
+
+        cedula = cedula_clean
+        codigo_radio = codigo_clean
+        usuario_sap = usuario_sap_clean
+
         with self._ctx():
             empleado = self.empleados.obtener_por_cedula(cedula)
             if not empleado:
@@ -84,7 +98,7 @@ class PrestamosService:
             if self.prestamos.obtener_prestamo_abierto(codigo_radio=codigo_radio):
                 raise BusinessRuleViolation(f"Radio {codigo_radio} ya está asignada")
 
-            turno_str = calcular_turno(ahora)
+            turno_vo = calcular_turno(ahora)
 
             entity = Prestamo(
                 id=None,
@@ -93,8 +107,8 @@ class PrestamosService:
                 usuario_sap=sapuser.username,
                 codigo_radio=radio.codigo,
                 fecha_hora_prestamo=ahora,
-                turno=turno_str,                 # Infra mapper lo convertirá a VO Enum
-                estado=EstadoPrestamo.ASIGNADO,  # idem
+                turno=turno_vo,
+                estado=EstadoPrestamo.ASIGNADO,
                 usuario_registra_id=usuario_registra_id,
             )
             created = self.prestamos.crear(entity)
@@ -102,12 +116,15 @@ class PrestamosService:
 
     # --------- Devolver (métodos específicos delegan en el unificado) ---------
     def devolver_por_radio(self, *, codigo_radio: str, ahora: datetime) -> Prestamo:
+        """Cierra el prestamo abierto asociado al codigo de radio."""
         return self.devolver(codigo_radio=codigo_radio, ahora=ahora)
 
     def devolver_por_cedula(self, *, cedula: str, ahora: datetime) -> Prestamo:
+        """Cierra el prestamo segun la cedula del empleado."""
         return self.devolver(cedula=cedula, ahora=ahora)
 
     def devolver_por_usuario_sap(self, *, usuario_sap: str, ahora: datetime) -> Prestamo:
+        """Cierra el prestamo usando el username SAP."""
         return self.devolver(usuario_sap=usuario_sap, ahora=ahora)
 
     def devolver(
@@ -118,30 +135,27 @@ class PrestamosService:
         usuario_sap: str | None = None,
         ahora: datetime,
     ) -> Prestamo:
-        """
-        Devuelve por cualquiera de los tres identificadores.
-        Regla: exactamente UNO debe venir informado.
-        Errores:
-        - 0 o >1 identificadores -> BusinessRuleViolation
-        - No hay préstamo abierto para el identificador -> EntityNotFound
-        """
-        keys = [x is not None and str(x).strip() != "" for x in (codigo_radio, cedula, usuario_sap)]
-        if sum(keys) != 1:
+        """Devuelve un prestamo abierto segun un unico identificador recibido."""
+        codigo_radio_clean = clean_rf(codigo_radio) if codigo_radio is not None else None
+        cedula_clean = clean_doc(cedula) if cedula is not None else None
+        usuario_sap_clean = clean_sap(usuario_sap) if usuario_sap is not None else None
+
+        provided = [v for v in (codigo_radio_clean, cedula_clean, usuario_sap_clean) if v]
+        if len(provided) != 1:
             raise BusinessRuleViolation("Debe enviar exactamente uno de: codigo_radio, cedula o usuario_sap")
 
         with self._ctx():
-            if codigo_radio:
-                abierto = self.prestamos.obtener_prestamo_abierto(codigo_radio=codigo_radio)
-                target = f"radio {codigo_radio}"
-            elif cedula:
-                abierto = self.prestamos.obtener_prestamo_abierto(cedula=cedula)
-                target = f"cédula {cedula}"
+            if codigo_radio_clean:
+                abierto = self.prestamos.obtener_prestamo_abierto(codigo_radio=codigo_radio_clean)
+                target = f"radio {codigo_radio_clean}"
+            elif cedula_clean:
+                abierto = self.prestamos.obtener_prestamo_abierto(cedula=cedula_clean)
+                target = f"cédula {cedula_clean}"
             else:
-                abierto = self.prestamos.obtener_prestamo_abierto(usuario_sap=usuario_sap)
-                target = f"usuario SAP {usuario_sap}"
+                abierto = self.prestamos.obtener_prestamo_abierto(usuario_sap=usuario_sap_clean)
+                target = f"usuario SAP {usuario_sap_clean}"
 
             if not abierto:
-                # Puedes cambiar a BusinessRuleViolation si prefieres semántica de "no está prestada".
                 raise EntityNotFound(f"No existe préstamo abierto para {target}")
 
             return self.prestamos.marcar_devolucion(abierto.id, fecha_hora=ahora)

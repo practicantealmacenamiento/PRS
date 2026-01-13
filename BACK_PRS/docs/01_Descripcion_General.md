@@ -11,7 +11,7 @@ RadioFrecuencias digitaliza el control de radios de comunicacion corporativos, g
 
 ## Capas de la solucion
 - **Dominio (`app/domain`)**: concentra entidades inmutables (`entities.py`), errores (`errors.py`), reglas (`rules.py`), value objects (`value_objects.py`) y puertos (`ports/*`). Modela conceptos como `Empleado`, `RadioFrecuencia`, `SapUsuario`, `Prestamo` y el calculo de turnos.
-- **Aplicacion (`app/application`)**: implementa servicios orquestadores (`services.py`, `catalogos_service.py`), comandos y casos de uso (`use_cases.py`) y validadores (`validators.py`). Traduce escenarios de negocio en operaciones transaccionales sobre los repositorios del dominio.
+- **Aplicacion (`app/application`)**: implementa servicios orquestadores (`services.py`, `catalogos_service.py`), comandos y casos de uso (`use_cases.py`) y consultas especializadas (`audit_queries.py`). Traduce escenarios de negocio en operaciones transaccionales sobre los repositorios del dominio, mientras que las validaciones de entrada viven en los serializers de la capa de interfaces.
 - **Infraestructura (`app/infrastructure`)**: define los modelos ORM (`models.py`), mapeadores (`mappers.py`) y adaptadores concretos de repositorios (`repositories.py`), ademas de la unidad de trabajo `DjangoUnitOfWork`.
 - **Interfaces (`app/interfaces`)**: expone la API REST con viewsets DRF (`views.py`), serializers (`serializers.py`), permisos (`permissions.py`) y ruteo (`urls.py`). Tambien sirve el log de auditoria y la administracion de usuarios internos.
 

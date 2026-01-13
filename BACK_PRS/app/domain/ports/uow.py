@@ -1,11 +1,13 @@
+"""Puerto de unidad de trabajo para coordinar transacciones."""
+
 from __future__ import annotations
+
 from typing import Protocol, ContextManager
 
+
 class UnitOfWork(Protocol, ContextManager["UnitOfWork"]):
-    """
-    Puerto de Unidad de Trabajo para transacciones atómicas entre múltiples repos.
-    Útil cuando el caso de uso toca >1 agregado/tabla.
-    """
+    """Permite orquestar operaciones atomicas entre multiples repositorios."""
+
     def commit(self) -> None: ...
     def rollback(self) -> None: ...
     def __enter__(self) -> "UnitOfWork": ...
