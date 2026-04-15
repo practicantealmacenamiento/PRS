@@ -1,0 +1,62 @@
+name: Backend Tests
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'BACK_PRS/**'
+      - '.github/workflows/backend-tests.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'BACK_PRS/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12']
+    
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v4
+    
+    - name: Configurar Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+    
+    - name: Instalar dependencias
+      working-directory: ./BACK_PRS
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install coverage pytest pytest-django
+    
+    - name: Ejecutar tests con coverage
+      working-directory: ./BACK_PRS
+      env:
+        DJANGO_SECRET_KEY: test-secret-key-for-ci
+        DEBUG: "True"
+      run: |
+        coverage run --source='.' manage.py test
+        coverage report --fail-under=70
+        coverage xml
+    
+    - name: Subir reporte de coverage a Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        files: ./BACK_PRS/coverage.xml
+        flags: backend
+        name: backend-coverage
+      continue-on-error: true
+    
+    - name: Lint con ruff (opcional)
+      working-directory: ./BACK_PRS
+      run: |
+        pip install ruff
+        ruff check . --exit-zero
+      continue-on-error: true

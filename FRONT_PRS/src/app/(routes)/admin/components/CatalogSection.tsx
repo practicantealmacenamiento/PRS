@@ -28,9 +28,9 @@ type CatalogSectionProps = {
 export function CatalogSection({ notify, onCatalogMutated }: CatalogSectionProps) {
   const [tab, setTab] = useState<CatalogTab>("empleados");
 
-  const empleados = useEmpleadosCatalog(notify, onCatalogMutated);
-  const radios = useRadiosCatalog(notify, onCatalogMutated);
-  const saps = useSapCatalog(notify, onCatalogMutated);
+  const empleados = useEmpleadosCatalog(notify, onCatalogMutated, tab === "empleados");
+  const radios = useRadiosCatalog(notify, onCatalogMutated, tab === "radios");
+  const saps = useSapCatalog(notify, onCatalogMutated, tab === "sap");
 
   return (
     <section className="card p-6 space-y-5">
@@ -57,7 +57,7 @@ const EMPLEADOS_ENDPOINT = "/empleados/";
 const RADIOS_ENDPOINT = "/radios/";
 const SAP_ENDPOINT = "/sap-usuarios/";
 
-function useEmpleadosCatalog(notify: NotifyFn, onCatalogMutated?: () => Promise<unknown> | unknown) {
+function useEmpleadosCatalog(notify: NotifyFn, onCatalogMutated?: () => Promise<unknown> | unknown, enabled = false) {
   const { busy, runMutation } = useBusyMutation(notify);
   const [items, setItems] = useState<Empleado[]>([]);
   const [cedula, setCedula] = useState("");
@@ -71,12 +71,13 @@ function useEmpleadosCatalog(notify: NotifyFn, onCatalogMutated?: () => Promise<
   }, []);
 
   useEffect(() => {
+    if (!enabled) return;
     void load().catch((error) => {
       const message =
         error instanceof Error ? error.message : "No se pudieron cargar los empleados.";
       notify("error", message);
     });
-  }, [load, notify]);
+  }, [enabled, load, notify]);
 
   const filtered = useMemo(() => {
     const value = filter.trim().toLowerCase();
@@ -165,7 +166,7 @@ function useEmpleadosCatalog(notify: NotifyFn, onCatalogMutated?: () => Promise<
   };
 }
 
-function useRadiosCatalog(notify: NotifyFn, onCatalogMutated?: () => Promise<unknown> | unknown) {
+function useRadiosCatalog(notify: NotifyFn, onCatalogMutated?: () => Promise<unknown> | unknown, enabled = false) {
   const { busy, runMutation } = useBusyMutation(notify);
   const [items, setItems] = useState<Radio[]>([]);
   const [codigo, setCodigo] = useState("");
@@ -179,11 +180,12 @@ function useRadiosCatalog(notify: NotifyFn, onCatalogMutated?: () => Promise<unk
   }, []);
 
   useEffect(() => {
+    if (!enabled) return;
     void load().catch((error) => {
       const message = error instanceof Error ? error.message : "No se pudieron cargar los radios.";
       notify("error", message);
     });
-  }, [load, notify]);
+  }, [enabled, load, notify]);
 
   const filtered = useMemo(() => {
     const value = filter.trim().toLowerCase();
@@ -274,7 +276,7 @@ function useRadiosCatalog(notify: NotifyFn, onCatalogMutated?: () => Promise<unk
   };
 }
 
-function useSapCatalog(notify: NotifyFn, onCatalogMutated?: () => Promise<unknown> | unknown) {
+function useSapCatalog(notify: NotifyFn, onCatalogMutated?: () => Promise<unknown> | unknown, enabled = false) {
   const { busy, runMutation } = useBusyMutation(notify);
   const [items, setItems] = useState<SapUsuario[]>([]);
   const [username, setUsername] = useState("");
@@ -288,12 +290,13 @@ function useSapCatalog(notify: NotifyFn, onCatalogMutated?: () => Promise<unknow
   }, []);
 
   useEffect(() => {
+    if (!enabled) return;
     void load().catch((error) => {
       const message =
         error instanceof Error ? error.message : "No se pudieron cargar los usuarios SAP.";
       notify("error", message);
     });
-  }, [load, notify]);
+  }, [enabled, load, notify]);
 
   const filtered = useMemo(() => {
     const value = filter.trim().toLowerCase();

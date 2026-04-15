@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { apiGET } from "@/lib/api";
 import type { PrestamoResp } from "@/lib/types";
 
@@ -47,7 +47,7 @@ export default function Home() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  async function load() {
+  const load = useCallback(async () => {
     setErr(null);
     try {
       const data = await apiGET<PrestamoResp[]>("/prestamos/");
@@ -58,14 +58,18 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
+
+  // Ref que siempre apunta a la versión más reciente de load
+  const loadRef = useRef(load);
+  useEffect(() => { loadRef.current = load; }, [load]);
 
   useEffect(() => {
-    load();
+    void load();
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, []);
+  }, [load]);
 
   // Auto-actualizar cada 30s
   useEffect(() => {
@@ -74,7 +78,7 @@ export default function Home() {
       timerRef.current = null;
     }
     if (autoRefresh) {
-      timerRef.current = setInterval(load, 30_000);
+      timerRef.current = setInterval(() => void loadRef.current(), 30_000);
     }
   }, [autoRefresh]);
 

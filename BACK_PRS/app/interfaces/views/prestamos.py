@@ -17,6 +17,8 @@ from ..serializers import (
     AsignarPrestamoRequestSerializer,
     DevolverPrestamoRequestSerializer,
     PrestamoResponseSerializer,
+    RadioResponseSerializer,
+    SapUsuarioResponseSerializer,
 )
 from ...application.use_cases import (
     AsignarPrestamoCmd,
@@ -24,10 +26,11 @@ from ...application.use_cases import (
     DevolverPorRadioCmd,
     DevolverPorUsuarioSapCmd,
 )
-from .shared import PrestamosServiceMixin, handle_domain_errors
+from .shared import CatalogosServiceMixin, PrestamosServiceMixin, handle_domain_errors
+from ...domain.value_objects import EstadoPrestamo
 
 
-class PrestamoViewSet(PrestamosServiceMixin, viewsets.GenericViewSet):
+class PrestamoViewSet(CatalogosServiceMixin, PrestamosServiceMixin, viewsets.GenericViewSet):
     """Operaciones de asignacion y devolucion de radios."""
 
     permission_classes = [IsAdmin]
@@ -119,3 +122,92 @@ class PrestamoViewSet(PrestamosServiceMixin, viewsets.GenericViewSet):
             prestamo = self.prestamos.devolver_por_usuario_sap(**cmd.__dict__)
 
         return Response(PrestamoResponseSerializer(prestamo.__dict__).data)
+
+    @extend_schema(
+        responses={
+            200: OpenApiResponse(description="Listas de SAP usuarios y radios disponibles para prestar."),
+        },
+        tags=["Prestamos"],
+        description="Devuelve usuarios SAP y radios que NO tienen un prestamo abierto actualmente.",
+    )
+    @action(detail=False, methods=["get"], url_path="disponibles", permission_classes=[IsAuthenticated])
+    def disponibles(self, request):
+        """Retorna los SAP usuarios y radios disponibles (sin prestamo abierto)."""
+        # Obtener codigos/usernames actualmente prestados
+        prestamos_abiertos = self.prestamos.listar()
+        sap_en_uso = {
+            p.usuario_sap
+            for p in prestamos_abiertos
+            if p.estado == EstadoPrestamo.ASIGNADO
+        }
+        radios_en_uso = {
+            p.codigo_radio
+            for p in prestamos_abiertos
+            if p.estado == EstadoPrestamo.ASIGNADO
+        }
+
+        # Filtrar catálogos
+        todos_sap = self.catalogos.sap.listar()
+        sap_disponibles = [
+            s for s in todos_sap
+            if s.activo and s.username not in sap_en_uso
+        ]
+
+        todas_radios = self.catalogos.radios.listar()
+        radios_disponibles = [
+            r for r in todas_radios
+            if r.activo and r.codigo not in radios_en_uso
+        ]
+
+        return Response({
+            "sap_usuarios": SapUsuarioResponseSerializer(
+                [s.__dict__ for s in sap_disponibles], many=True
+            ).data,
+            "radios": RadioResponseSerializer(
+                [r.__dict__ for r in radios_disponibles], many=True
+            ).data,
+        })
+
+    @extend_schema(
+        responses={
+            200: OpenApiResponse(description="Listas de SAP usuarios y radios actualmente prestados (ASIGNADO)."),
+        },
+        tags=["Prestamos"],
+        description="Devuelve usuarios SAP y radios que tienen un prestamo abierto actualmente, con datos del prestamo.",
+    )
+    @action(detail=False, methods=["get"], url_path="asignados", permission_classes=[IsAuthenticated])
+    def asignados(self, request):
+        """Retorna los SAP usuarios y radios con prestamo abierto (para formulario de devolucion)."""
+        prestamos_abiertos = [
+            p for p in self.prestamos.listar()
+            if p.estado == EstadoPrestamo.ASIGNADO
+        ]
+
+        # Construir lista enriquecida: codigo_radio + info del prestamo
+        radios_asignadas = [
+            {
+                "codigo_radio": p.codigo_radio,
+                "usuario_sap": p.usuario_sap,
+                "cedula": p.cedula,
+                "empleado_nombre": p.empleado_nombre,
+                "prestamo_id": p.id,
+            }
+            for p in prestamos_abiertos
+        ]
+
+        # SAP usuarios asignados
+        sap_asignados = [
+            {
+                "username": p.usuario_sap,
+                "codigo_radio": p.codigo_radio,
+                "cedula": p.cedula,
+                "empleado_nombre": p.empleado_nombre,
+                "prestamo_id": p.id,
+            }
+            for p in prestamos_abiertos
+        ]
+
+        return Response({
+            "sap_usuarios": sap_asignados,
+            "radios": radios_asignadas,
+        })

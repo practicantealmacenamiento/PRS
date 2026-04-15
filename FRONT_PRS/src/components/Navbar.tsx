@@ -25,18 +25,17 @@ export default function Navbar() {
   const item = (href: string, label: string) => (
     <Link
       href={href}
-      className={`px-3 py-2 rounded-lg text-sm transition-colors ${
-        pathname === href
+      className={`px-3 py-2 rounded-lg text-sm transition-colors ${pathname === href
           ? "bg-sky-blue text-white"
           : "hover:bg-cloud text-grey dark:text-cloud dark:hover:bg-coffee/30"
-      }`}
+        }`}
     >
       {label}
     </Link>
   );
 
   return (
-    <nav className="sticky top-0 z-40 border-b border-light-grey/40 bg-bone/70 dark:bg-coffee/40 backdrop-blur">
+    <nav className="sticky top-0 z-40 border-b border-slate-200/60 dark:border-white/10 bg-white/70 dark:bg-slate-900/70 backdrop-blur">
       <div className="mx-auto max-w-6xl h-14 px-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           {/* Logo (claro/oscuro) */}

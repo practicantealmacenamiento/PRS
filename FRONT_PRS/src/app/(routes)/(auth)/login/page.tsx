@@ -71,7 +71,7 @@ export default function LoginPage() {
           <button className="btn btn-primary w-full" disabled={loading}>
             {loading ? "Ingresando..." : "Entrar"}
           </button>
-          {message && <p className="text-sm text-red-500 dark:text-red-300">{message}</p>}
+          {message && <p className="text-sm text-rose-800 dark:text-rose-200">{message}</p>}
         </form>
       </div>
     </main>

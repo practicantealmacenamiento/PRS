@@ -7,14 +7,15 @@ export default function Menu() {
   const item = (href: string, label: string) => (
     <Link
       href={href}
-      className={`block rounded-lg px-3 py-2 text-sm ${p === href ? "bg-slate-900 text-white" : "hover:bg-slate-100"}`}
+      className={`block rounded-lg px-3 py-2 text-sm ${p === href ? "bg-skyBlue" : "hover:bg-cloud dark:hover:bg-coffee/30"}`}
+      style={p === href ? { color: "white" } : undefined}
     >
       {label}
     </Link>
   );
   return (
     <aside className="card p-4">
-      <div className="text-slate-900 font-semibold mb-3">Menú</div>
+      <div className="font-semibold mb-3">Menú</div>
       <nav className="space-y-1">
         {item("/", "Inicio")}
         {item("/prestamos", "Prestamos y Devoluciones")}

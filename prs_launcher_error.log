@@ -1,0 +1,138 @@
+
+============================================================
+  INICIO SESIÓN: 2026-04-15 09:51:46
+  BASE_DIR : C:\Users\prac.almacenamiento\OneDrive - Prebel S.A BIC\Escritorio\Daniel_Python\RADIOFRECUENCIAS
+  BACK_DIR : C:\Users\prac.almacenamiento\OneDrive - Prebel S.A BIC\Escritorio\Daniel_Python\RADIOFRECUENCIAS\BACK_PRS
+  FRONT_DIR: C:\Users\prac.almacenamiento\OneDrive - Prebel S.A BIC\Escritorio\Daniel_Python\RADIOFRECUENCIAS\FRONT_PRS
+  OS       : win32
+============================================================
+[09:51:46] Iniciando API (Django) en puerto 8000...
+[09:51:48] Iniciando Web (Next.js) en puerto 3000...
+[09:51:49] El navegador se abrirá en 15 segundos...
+[09:51:49] ✅ Servicios en línea.
+[09:51:49]    NO CIERRES ESTA VENTANA para mantener la app funcionando.
+[09:51:49]    Presiona Ctrl+C para detener ambos servidores de forma segura.
+[09:51:49]    Log guardado en: C:\Users\prac.almacenamiento\OneDrive - Prebel S.A BIC\Escritorio\Daniel_Python\RADIOFRECUENCIAS\prs_launcher_error.log
+  [FRONT] > front-radiofrecuencias@0.1.0 dev
+  [FRONT] > next dev --turbopack
+  [BACK] Watching for file changes with StatReloader
+  [FRONT]    ▲ Next.js 15.5.12 (Turbopack)
+  [FRONT]    - Local:        http://localhost:3000
+  [FRONT]    - Network:      http://172.24.66.23:3000
+  [FRONT]    - Environments: .env.local
+  [FRONT]  ✓ Starting...
+[09:52:04] Abriendo aplicación en http://localhost:3000
+  [FRONT]  ○ Compiling middleware ...
+  [FRONT]  ✓ Compiled middleware in 638ms
+  [FRONT]  ✓ Ready in 10.2s
+  [FRONT]  ○ Compiling / ...
+  [FRONT] [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+  [FRONT] Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+  [FRONT]   npx update-browserslist-db@latest
+  [FRONT]   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+  [FRONT]  ✓ Compiled / in 11.7s
+  [FRONT]  GET / 200 in 13667ms
+  [BACK] [15/Apr/2026 09:52:24] "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+  [BACK] Unauthorized: /api/token/refresh/
+  [BACK] [15/Apr/2026 09:52:24] "POST /api/token/refresh/ HTTP/1.1" 401 54
+  [BACK] [15/Apr/2026 09:52:24] "OPTIONS /api/prestamos/ HTTP/1.1" 200 0
+  [BACK] Unauthorized: /api/prestamos/
+  [BACK] [15/Apr/2026 09:52:24] "GET /api/prestamos/ HTTP/1.1" 401 172
+
+============================================================
+  INICIO SESIÓN: 2026-04-15 10:32:28
+  BASE_DIR : C:\Users\prac.almacenamiento\OneDrive - Prebel S.A BIC\Escritorio\Daniel_Python\RADIOFRECUENCIAS
+  BACK_DIR : C:\Users\prac.almacenamiento\OneDrive - Prebel S.A BIC\Escritorio\Daniel_Python\RADIOFRECUENCIAS\BACK_PRS
+  FRONT_DIR: C:\Users\prac.almacenamiento\OneDrive - Prebel S.A BIC\Escritorio\Daniel_Python\RADIOFRECUENCIAS\FRONT_PRS
+  OS       : win32
+============================================================
+[10:32:28] Iniciando API (Django) en puerto 8000...
+[10:32:30] Iniciando Web (Next.js) en puerto 3000...
+[10:32:30] ✅ Servicios en línea.
+[10:32:30] El navegador se abrirá en 15 segundos...
+[10:32:30]    NO CIERRES ESTA VENTANA para mantener la app funcionando.
+[10:32:30]    Presiona Ctrl+C para detener ambos servidores de forma segura.
+[10:32:30]    Log guardado en: C:\Users\prac.almacenamiento\OneDrive - Prebel S.A BIC\Escritorio\Daniel_Python\RADIOFRECUENCIAS\prs_launcher_error.log
+  [BACK] Watching for file changes with StatReloader
+  [FRONT] > front-radiofrecuencias@0.1.0 dev
+  [FRONT] > next dev --turbopack
+[10:32:45] Abriendo aplicación en http://localhost:3000
+  [FRONT]    ▲ Next.js 15.5.12 (Turbopack)
+  [FRONT]    - Local:        http://localhost:3000
+  [FRONT]    - Network:      http://172.24.66.23:3000
+  [FRONT]    - Environments: .env.local
+  [FRONT]  ✓ Starting...
+  [FRONT]  ○ Compiling middleware ...
+  [FRONT]  ✓ Compiled middleware in 863ms
+  [FRONT]  ✓ Ready in 16.8s
+  [FRONT]  ○ Compiling / ...
+  [FRONT] [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+  [FRONT] Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+  [FRONT]   npx update-browserslist-db@latest
+  [FRONT]   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+  [FRONT]  ✓ Compiled / in 13.9s
+  [FRONT]  GET / 200 in 15956ms
+  [BACK] [15/Apr/2026 10:33:28] "OPTIONS /api/prestamos/ HTTP/1.1" 200 0
+  [BACK] Unauthorized: /api/prestamos/
+  [BACK] [15/Apr/2026 10:33:29] "GET /api/prestamos/ HTTP/1.1" 401 65
+  [FRONT]  ○ Compiling /favicon.ico ...
+  [FRONT]  ✓ Compiled /favicon.ico in 1222ms
+  [FRONT]  GET /favicon.ico?favicon.0b3bf435.ico 200 in 2282ms
+  [FRONT]  ○ Compiling /prestamos ...
+  [FRONT]  ✓ Compiled /prestamos in 1255ms
+  [FRONT]  GET /prestamos 200 in 2149ms
+  [BACK] [15/Apr/2026 10:33:43] "OPTIONS /api/prestamos/disponibles/ HTTP/1.1" 200 0
+  [BACK] Unauthorized: /api/prestamos/disponibles/
+  [BACK] [15/Apr/2026 10:33:43] "OPTIONS /api/prestamos/asignados/ HTTP/1.1" 200 0
+  [BACK] [15/Apr/2026 10:33:43] "GET /api/prestamos/disponibles/ HTTP/1.1" 401 65
+  [BACK] [15/Apr/2026 10:33:43] "OPTIONS /api/prestamos/disponibles/ HTTP/1.1" 200 0
+  [BACK] [15/Apr/2026 10:33:43] "OPTIONS /api/prestamos/asignados/ HTTP/1.1" 200 0
+  [BACK] Unauthorized: /api/prestamos/asignados/
+  [BACK] Unauthorized: /api/prestamos/asignados/
+  [BACK] Unauthorized: /api/prestamos/disponibles/
+  [BACK] [15/Apr/2026 10:33:43] "GET /api/prestamos/asignados/ HTTP/1.1" 401 65
+  [BACK] [15/Apr/2026 10:33:43] "GET /api/prestamos/disponibles/ HTTP/1.1" 401 65
+  [BACK] [15/Apr/2026 10:33:43] "GET /api/prestamos/asignados/ HTTP/1.1" 401 65
+  [FRONT]  ○ Compiling /login ...
+  [FRONT]  ✓ Compiled /login in 1070ms
+  [FRONT]  GET /login 200 in 1823ms
+  [FRONT]  GET /login 200 in 1253ms
+  [BACK] [15/Apr/2026 10:33:51] "OPTIONS /api/token/ HTTP/1.1" 200 0
+  [BACK] Unauthorized: /api/token/
+  [BACK] [15/Apr/2026 10:33:51] "POST /api/token/ HTTP/1.1" 401 63
+  [BACK] [15/Apr/2026 10:34:01] "POST /api/token/ HTTP/1.1" 200 489
+  [FRONT]  GET /prestamos 200 in 1234ms
+  [BACK] [15/Apr/2026 10:34:03] "OPTIONS /api/prestamos/disponibles/ HTTP/1.1" 200 0
+  [BACK] [15/Apr/2026 10:34:03] "OPTIONS /api/prestamos/asignados/ HTTP/1.1" 200 0
+  [BACK] [15/Apr/2026 10:34:03] "OPTIONS /api/prestamos/disponibles/ HTTP/1.1" 200 0
+  [BACK] [15/Apr/2026 10:34:03] "OPTIONS /api/prestamos/asignados/ HTTP/1.1" 200 0
+  [BACK] [15/Apr/2026 10:34:03] "GET /api/prestamos/asignados/ HTTP/1.1" 200 31
+  [BACK] [15/Apr/2026 10:34:03] "GET /api/prestamos/disponibles/ HTTP/1.1" 200 5511
+  [BACK] [15/Apr/2026 10:34:03] "GET /api/prestamos/asignados/ HTTP/1.1" 200 31
+  [BACK] [15/Apr/2026 10:34:03] "GET /api/prestamos/disponibles/ HTTP/1.1" 200 5511
+  [FRONT]  ○ Compiling /historico ...
+  [FRONT]  ✓ Compiled /historico in 4.9s
+  [FRONT]  GET /historico 200 in 5880ms
+  [BACK] [15/Apr/2026 10:34:18] "OPTIONS /api/prestamos/? HTTP/1.1" 200 0
+  [BACK] [15/Apr/2026 10:34:18] "OPTIONS /api/prestamos/? HTTP/1.1" 200 0
+  [BACK] [15/Apr/2026 10:34:18] "GET /api/prestamos/? HTTP/1.1" 200 2
+  [BACK] [15/Apr/2026 10:34:18] "GET /api/prestamos/? HTTP/1.1" 200 2
+  [FRONT]  GET / 200 in 1036ms
+  [BACK] [15/Apr/2026 10:34:24] "OPTIONS /api/prestamos/ HTTP/1.1" 200 0
+  [BACK] [15/Apr/2026 10:34:24] "OPTIONS /api/prestamos/ HTTP/1.1" 200 0
+  [BACK] [15/Apr/2026 10:34:24] "GET /api/prestamos/ HTTP/1.1" 200 2
+  [BACK] [15/Apr/2026 10:34:24] "GET /api/prestamos/ HTTP/1.1" 200 2
+  [FRONT]  GET /historico 200 in 1145ms
+  [BACK] [15/Apr/2026 10:34:27] "OPTIONS /api/prestamos/? HTTP/1.1" 200 0
+  [BACK] [15/Apr/2026 10:34:27] "OPTIONS /api/prestamos/? HTTP/1.1" 200 0
+  [BACK] [15/Apr/2026 10:34:27] "GET /api/prestamos/? HTTP/1.1" 200 2
+  [BACK] [15/Apr/2026 10:34:27] "GET /api/prestamos/? HTTP/1.1" 200 2
+  [FRONT]  GET /prestamos 200 in 903ms
+  [BACK] [15/Apr/2026 10:34:30] "OPTIONS /api/prestamos/disponibles/ HTTP/1.1" 200 0
+  [BACK] [15/Apr/2026 10:34:30] "OPTIONS /api/prestamos/disponibles/ HTTP/1.1" 200 0
+  [BACK] [15/Apr/2026 10:34:30] "OPTIONS /api/prestamos/asignados/ HTTP/1.1" 200 0
+  [BACK] [15/Apr/2026 10:34:30] "OPTIONS /api/prestamos/asignados/ HTTP/1.1" 200 0
+  [BACK] [15/Apr/2026 10:34:30] "GET /api/prestamos/asignados/ HTTP/1.1" 200 31
+  [BACK] [15/Apr/2026 10:34:30] "GET /api/prestamos/disponibles/ HTTP/1.1" 200 5511
+  [BACK] [15/Apr/2026 10:34:30] "GET /api/prestamos/asignados/ HTTP/1.1" 200 31
+  [BACK] [15/Apr/2026 10:34:30] "GET /api/prestamos/disponibles/ HTTP/1.1" 200 5511

@@ -1,0 +1,175 @@
+# Informe de Colores — SIGIM Frontend
+
+## 1. Tokens de color personalizados (Design Tokens)
+
+Definidos en [globals.css](file:///c:/Users/prac.almacenamiento/OneDrive%20-%20Prebel%20S.A%20BIC/Escritorio/Alex_Py/SIGIM/FRONT_FormContainers/src/app/globals.css) con la directiva `@theme` de Tailwind CSS v4:
+
+```css
+@theme {
+  --color-skyBlue:     #4278FA;
+  --color-cyan:        #4372C4;
+  --color-cloud:       #EDEBE3;
+  --color-lightBlue:   #94B2FA;
+  --color-coffee:      #4D5445;
+  --color-lightCoffee: #9EA18A;
+  --color-bone:        #E8E3D4;
+  --color-grey:        #4D5461;
+  --color-lightGrey:   #8C96A1;
+}
+```
+
+### Mapa visual de tokens
+
+| Token | Hex | Muestra | Uso principal |
+|-------|-----|---------|---------------|
+| `skyBlue` | `#4278FA` | 🔵 | **Color primario/acento.** Botones principales, badges, indicadores activos, gradientes dark mode |
+| `cyan` | `#4372C4` | 🔵 | Variante más oscura del primario. Complemento para bordes o hover |
+| `cloud` | `#EDEBE3` | ⬜ | Fondo claro alternativo |
+| `lightBlue` | `#94B2FA` | 🔵 | Variante clara del primario para estados hover/disabled |
+| `coffee` | `#4D5445` | 🟤 | Texto oscuro con matiz verde-oliva |
+| `lightCoffee` | `#9EA18A` | 🟤 | Texto secundario/muted |
+| `bone` | `#E8E3D4` | 🟡 | **Texto en dark mode** y fondo cálido en light mode |
+| `grey` | `#4D5461` | ⬛ | Texto neutro oscuro |
+| `lightGrey` | `#8C96A1` | 🔘 | Texto terciario, placeholders |
+
+---
+
+## 2. Colores hex hardcodeados
+
+Valores usados directamente en componentes (no como tokens):
+
+| Hex | Dónde | Uso |
+|-----|-------|-----|
+| `#202020` | [layout.tsx L48](file:///c:/Users/prac.almacenamiento/OneDrive%20-%20Prebel%20S.A%20BIC/Escritorio/Alex_Py/SIGIM/FRONT_FormContainers/src/app/layout.tsx#L48) | **Texto base light** (`text-[#202020]`) y fondo final **dark mode** (`dark:to-[#202020]`) |
+| `#0b1220` | [formulario/page.tsx](file:///c:/Users/prac.almacenamiento/OneDrive%20-%20Prebel%20S.A%20BIC/Escritorio/Alex_Py/SIGIM/FRONT_FormContainers/src/app/(routes)/formulario/page.tsx#L20), admin, historial | Fondo degradado dark de las páginas interiores (`dark:from-[#0b1220] dark:to-[#0b1220]`) |
+| `#1E40AF` | [manifest.ts](file:///c:/Users/prac.almacenamiento/OneDrive%20-%20Prebel%20S.A%20BIC/Escritorio/Alex_Py/SIGIM/FRONT_FormContainers/src/app/manifest.ts#L14-L15), [head.tsx](file:///c:/Users/prac.almacenamiento/OneDrive%20-%20Prebel%20S.A%20BIC/Escritorio/Alex_Py/SIGIM/FRONT_FormContainers/src/app/head.tsx#L5) | PWA `theme_color` y `background_color` (azul oscuro Tailwind `blue-800`) |
+
+---
+
+## 3. Paletas de Tailwind utilizadas
+
+El proyecto usa extensivamente las paletas built-in de Tailwind. Aquí están **todas** las que aparecen en el código:
+
+### Paleta principal — `slate` (neutros fríos)
+> Usada en prácticamente todos los componentes.
+
+| Clase | Contexto |
+|-------|----------|
+| `bg-slate-50`, `bg-slate-100` | Fondos de secciones, skeletons, hover states |
+| `bg-slate-400` | Badge/indicador inactivo |
+| `bg-slate-800`, `bg-slate-900` | Fondos dark mode de cards, header, dropdowns |
+| `text-slate-500` | Texto secundario/labels |
+| `text-slate-600`, `text-slate-700` | Texto body |
+| `text-slate-900` | Texto primario (headings) |
+| `border-slate-100`, `border-slate-200` | Bordes de cards, separadores, inputs |
+| `ring-slate-200` | Ring en cards |
+
+### Paleta de acento — `sky` (azul cielo)
+> Color de acción / marca.
+
+| Clase | Contexto |
+|-------|----------|
+| `text-sky-400`, `text-sky-500`, `text-sky-600` | Links, iconos activos, navbar activo |
+| `bg-sky-500/10` | Badge/avatar de usuario |
+| `bg-sky-600` | Botón CTA principal, login button |
+| `hover:bg-sky-500`, `hover:bg-sky-700` | Hover de botones |
+| `ring-sky-300/40`, `ring-sky-400`, `ring-sky-500` | Focus rings |
+| `selection:bg-sky-200` | Selección de texto light mode |
+
+### Paleta de éxito — `emerald`
+
+| Clase | Contexto |
+|-------|----------|
+| `text-emerald-600/700`, `dark:text-emerald-300/400` | Texto de éxito, verificación OCR |
+| `bg-emerald-50`, `dark:bg-emerald-900/20` | Background de alerts de éxito |
+| `border-emerald-300/40`, `border-emerald-500/30` | Bordes de estado exitoso |
+
+### Paleta de advertencia — `amber`
+
+| Clase | Contexto |
+|-------|----------|
+| `text-amber-700/800/900`, `dark:text-amber-200/300` | Alertas de advertencia |
+| `bg-amber-50`, `dark:bg-amber-900/20` | Background de warnings |
+| `border-amber-200`, `border-amber-300/50`, `border-amber-500/30` | Bordes de warning |
+
+### Paleta de error — `rose` / [red](file:///c:/Users/prac.almacenamiento/OneDrive%20-%20Prebel%20S.A%20BIC/Escritorio/Alex_Py/SIGIM/BACK_FormContainers/app/infrastructure/adapters/external_adapters/mock_vision.py#130-174)
+
+| Clase | Contexto |
+|-------|----------|
+| `text-red-500` | Asterisco de campo requerido |
+| `text-rose-800`, `dark:text-rose-200` | Texto de error |
+| `bg-rose-50`, `dark:bg-rose-950/40` | Background de error cards |
+| `border-rose-200`, `dark:border-rose-900/40` | Bordes de error |
+
+---
+
+## 4. Dark Mode — Estrategia
+
+| Aspecto | Valor |
+|---------|-------|
+| **Librería** | `next-themes` con `attribute="class"` |
+| **Activación CSS** | `@custom-variant dark (&:where(.dark, .dark *))` |
+| **Default** | `system` (sigue preferencia del OS) |
+| **Toggle** | Componente [ThemeToggle](file:///c:/Users/prac.almacenamiento/OneDrive%20-%20Prebel%20S.A%20BIC/Escritorio/Alex_Py/SIGIM/FRONT_FormContainers/components/theme/toggleTheme.tsx#5-25) en el header |
+
+### Mapeo Light → Dark de los fondos principales
+
+```
+Light                          →  Dark
+─────────────────────────────────────────────────
+bg-radial from-bone            →  dark:from-skyBlue
+         via-bone              →  dark:via-none
+         to-white              →  dark:to-[#202020]
+
+text-[#202020]                 →  dark:text-bone
+
+bg-white (cards)               →  dark:bg-slate-800
+bg-white/70 (header)           →  dark:bg-slate-900/70
+border-slate-200/60            →  dark:border-white/10
+
+bg-gradient-to-b
+  from-slate-50 to-white       →  dark:from-[#0b1220] dark:to-[#0b1220]
+```
+
+---
+
+## 5. Tipografía
+
+| Fuente | Tipo | Archivo | Uso |
+|--------|------|---------|-----|
+| **Acid Grotesk Light** | Local (woff) | `acid-grotesk-light.woff` | Fuente principal del body |
+| **FFF Acid Grotesk** | Local (woff variable) | `FFFAcidGroteskVariableTRIALVF.woff` | Fuente secundaria / display |
+
+---
+
+## 6. Resumen para replicar
+
+Para replicar este sistema de colores en otro proyecto Next.js + Tailwind CSS v4:
+
+```css
+/* globals.css */
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-skyBlue:     #4278FA;   /* Primario / Acento */
+  --color-cyan:        #4372C4;   /* Primario oscuro */
+  --color-cloud:       #EDEBE3;   /* Fondo claro alt */
+  --color-lightBlue:   #94B2FA;   /* Primario claro */
+  --color-coffee:      #4D5445;   /* Texto oliva oscuro */
+  --color-lightCoffee: #9EA18A;   /* Texto muted */
+  --color-bone:        #E8E3D4;   /* Fondo cálido / texto dark */
+  --color-grey:        #4D5461;   /* Texto neutro */
+  --color-lightGrey:   #8C96A1;   /* Texto terciario */
+}
+```
+
+**Hex adicionales obligatorios:**
+- `#202020` — texto base light / fondo final dark
+- `#0b1220` — fondo degradado páginas interiores dark
+- `#1E40AF` — PWA theme color
+
+**Paletas Tailwind a usar:** `slate`, `sky`, `emerald`, `amber`, `rose`, [red](file:///c:/Users/prac.almacenamiento/OneDrive%20-%20Prebel%20S.A%20BIC/Escritorio/Alex_Py/SIGIM/BACK_FormContainers/app/infrastructure/adapters/external_adapters/mock_vision.py#130-174)
+
+**Dependencias:** `next-themes`, fuentes locales Acid Grotesk

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Menu from "@/components/Menu";
 import { apiGET } from "@/lib/api";
 import type { PrestamoResp } from "@/lib/types";
@@ -60,9 +60,8 @@ function StatusBadge({ estado }: { estado: string }) {
   const devol = (estado || "").toUpperCase() === "DEVUELTO";
   return (
     <span
-      className={`badge transition-all duration-200 ${
-        devol ? "status-devuelto" : "status-asignado"
-      }`}
+      className={`badge transition-all duration-200 ${devol ? "status-devuelto" : "status-asignado"
+        }`}
       title={devol ? "Devuelto" : "Asignado"}
     >
       {estado ?? "—"}
@@ -110,7 +109,7 @@ export default function HistoricoPage() {
   const [autoRefresh, setAutoRefresh] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  async function load() {
+  const load = useCallback(async () => {
     setLoading(true);
     setErr(null);
     try {
@@ -126,10 +125,14 @@ export default function HistoricoPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [qCedula, qRadio]);
+
+  // Ref que siempre apunta a la versión más reciente de load
+  const loadRef = useRef(load);
+  useEffect(() => { loadRef.current = load; }, [load]);
 
   useEffect(() => {
-    load(); // primera carga
+    void load(); // primera carga
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
@@ -142,9 +145,9 @@ export default function HistoricoPage() {
       timerRef.current = null;
     }
     if (autoRefresh) {
-      timerRef.current = setInterval(load, 30_000);
+      timerRef.current = setInterval(() => void loadRef.current(), 30_000);
     }
-  }, [autoRefresh]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [autoRefresh]);
 
   // filtros client-side + orden
   const filtered = useMemo(() => {
@@ -203,7 +206,7 @@ export default function HistoricoPage() {
   return (
     <>
       {/* Top bar más ancha */}
-      <header className="sticky top-14 z-30 bg-bone/80 dark:bg-coffee/80 backdrop-blur border-b border-light-grey/40">
+      <header className="sticky top-14 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur border-b border-slate-200/60 dark:border-white/10">
         <div className="mx-auto max-w-screen-2xl px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <h1 className="text-2xl tracking-tight font-semibold">Histórico</h1>
@@ -302,7 +305,7 @@ export default function HistoricoPage() {
           {/* Tabla más amplia */}
           <div className="mt-5 rounded-2xl ring-1 ring-light-grey/40 overflow-auto max-h-[72vh]">
             <table className="table table-auto w-full">
-              <thead className="sticky top-0 z-10 bg-bone/90 dark:bg-coffee/90 backdrop-blur">
+              <thead className="sticky top-0 z-10 bg-white/90 dark:bg-slate-900/90 backdrop-blur">
                 <tr>
                   {[
                     ["id", "ID", "right"],
@@ -321,9 +324,8 @@ export default function HistoricoPage() {
                     return (
                       <th
                         key={k}
-                        className={`table-cell select-none cursor-pointer transition-colors ${
-                          active ? "text-brand" : "hover:text-slate-600 dark:hover:text-slate-300"
-                        } ${align === "right" ? "text-right" : align === "center" ? "text-center" : "text-left"}`}
+                        className={`table-cell select-none cursor-pointer transition-colors ${active ? "text-brand" : "hover:text-grey dark:hover:text-cloud"
+                          } ${align === "right" ? "text-right" : align === "center" ? "text-center" : "text-left"}`}
                         aria-sort={active ? (sortOrder === "asc" ? "ascending" : "descending") : "none"}
                         onClick={() => setSort(k)}
                         title="Ordenar"
@@ -407,11 +409,10 @@ export default function HistoricoPage() {
                       <button
                         key={n}
                         onClick={() => setPage(n)}
-                        className={`px-2.5 h-9 rounded-lg text-sm transition-colors ${
-                          active
-                            ? "bg-sky-blue text-white"
-                            : "hover:bg-cloud/80 dark:hover:bg-coffee/40"
-                        }`}
+                        className={`px-2.5 h-9 rounded-lg text-sm transition-colors ${active
+                          ? "bg-sky-blue text-white"
+                          : "hover:bg-cloud/80 dark:hover:bg-coffee/40"
+                          }`}
                         aria-current={active ? "page" : undefined}
                       >
                         {n}

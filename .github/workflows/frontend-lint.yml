@@ -1,0 +1,50 @@
+name: Frontend Lint & Build
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'FRONT_PRS/**'
+      - '.github/workflows/frontend-lint.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'FRONT_PRS/**'
+
+jobs:
+  lint-and-build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v4
+    
+    - name: Configurar Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: FRONT_PRS/package-lock.json
+    
+    - name: Instalar dependencias
+      working-directory: ./FRONT_PRS
+      run: npm ci
+    
+    - name: Ejecutar ESLint
+      working-directory: ./FRONT_PRS
+      run: npm run lint
+    
+    - name: Build de producción
+      working-directory: ./FRONT_PRS
+      env:
+        NEXT_PUBLIC_API_URL: http://localhost:8000/api
+      run: npm run build
+    
+    - name: Verificar archivos generados
+      working-directory: ./FRONT_PRS
+      run: |
+        if [ ! -d ".next" ]; then
+          echo "Error: Build no generó carpeta .next"
+          exit 1
+        fi
+        echo "✅ Build exitoso"
